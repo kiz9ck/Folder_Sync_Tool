@@ -1,0 +1,8 @@
+.log
+source/
+replica/
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env/
