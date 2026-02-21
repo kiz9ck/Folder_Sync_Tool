@@ -4,7 +4,6 @@ import hashlib
 import logging 
 import time 
 import sys 
-import pathlib
 
 def setup_logger(log_file):
     logger = logging.getLogger("sync_logger")
