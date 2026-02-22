@@ -75,39 +75,44 @@ def main():
 
     source = sys.argv[1]
     replica = sys.argv[2]
-
+    log_file = sys.argv[5]
+    
+    logger = setup_logger(log_file)
+    
     if not os.path.isdir(source):
-        print(f"Error: there is no '{source}' directory")
+        logger.Error(f"Error: there is no '{source}' directory")
         return
 
     if os.path.abspath(source) == os.path.abspath(replica):
-        print("Eror: <source> and <replica> can't be the same path")
+        logger.Error("Eror: <source> and <replica> can't be the same path")
         return
 
     if os.path.exists(replica) and not os.path.isdir(replica):
-        print(f"Error: '{replica} is a file not a directory'")
+        logger.Error(f"Error: '{replica} is a file not a directory'")
         return
 
     try:
         interval = float(sys.argv[3])
         amount = int(sys.argv[4])
     except ValueError:
-        print("Error: <interval> and <amount> must be digits")
+        logger.Error("Error: <interval> and <amount> must be digits")
         return
     if interval < 0:
-        print("Error: <interval> must be positive number")
+        logger.error("Error: <interval> must be positive number")
         return
     if amount <= 0:
-        print("Error: <amount> must be greater than 0")
+        logger.Error("Error: <amount> must be greater than 0")
         return
-    log_file = sys.argv[5]
-
-    logger = setup_logger(log_file)
 
     for i in range(amount):
         logger.info("Synchronization")
-        sync(source, replica, logger)
-        time.sleep(interval)
+        try:
+            sync(source, replica, logger)
+        except PermissionError as e:
+            logger.Error("Error: enexpected error")
+            return
+        if i < amount - 1:
+            time.sleep(interval)
 
 
 if __name__ == "__main__":
